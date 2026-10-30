@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neon Pulse Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0a24;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.14);--text:#f5f3ff;--mute:#b4aedc;
+--c1:#8b5cf6;--c2:#ff3d9a;--c3:#22d3ee;--c4:#ffb020;--c5:#34e89e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f1edff;--card:rgba(255,255,255,.75);--line:rgba(80,40,160,.15);--text:#1c1347;--mute:#5d5490}}
+:root[data-theme="light"]{--bg:#f1edff;--card:rgba(255,255,255,.75);--line:rgba(80,40,160,.15);--text:#1c1347;--mute:#5d5490}
+:root[data-theme="dark"]{--bg:#0d0a24;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.14);--text:#f5f3ff;--mute:#b4aedc}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:Sora,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;overflow-x:hidden;position:relative}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.55;z-index:0;animation:float 14s ease-in-out infinite}
+.b1{width:420px;height:420px;background:var(--c1);top:-100px;left:-80px}
+.b2{width:380px;height:380px;background:var(--c2);bottom:-100px;right:-60px;animation-delay:-5s}
+.b3{width:300px;height:300px;background:var(--c3);top:40%;left:45%;animation-delay:-9s;opacity:.35}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(80px,60px) scale(1.2)}66%{transform:translate(-60px,90px) scale(.9)}}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:22px 18px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px;animation:drop 1s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes drop{from{transform:translateY(-60px) scale(.9);opacity:0}}
+h1{font-size:clamp(1.6rem,4vw,2.5rem);font-weight:800;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c4),var(--c3),var(--c1));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+.sub{color:var(--mute);font-size:.9rem;margin-top:4px}
+.actions{display:flex;gap:10px;align-items:center}
+button{font:inherit;cursor:pointer;border:0;color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;background:linear-gradient(135deg,var(--c1),var(--c2));position:relative;overflow:hidden;transition:transform .2s}
+button:hover{transform:scale(1.07) rotate(-1deg)}button:active{transform:scale(.94)}
+button:focus-visible{outline:3px solid var(--c3);outline-offset:3px}
+.ghost{background:var(--card);border:1px solid var(--line);color:var(--text)}
+.live{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--mute)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c5);animation:ping 1.4s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 var(--c5)}100%{box-shadow:0 0 0 14px transparent}}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.card{grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;opacity:0;animation:pop .8s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:calc(var(--i)*.09s + .3s);transform-style:preserve-3d}
+@keyframes pop{from{opacity:0;transform:translateY(50px) rotateX(35deg) scale(.85)}to{opacity:1;transform:none}}
+.card:hover{box-shadow:0 18px 50px -12px var(--glow,var(--c1))}
+.card::after{content:"";position:absolute;inset:-2px;background:conic-gradient(from var(--a,0deg),transparent 70%,var(--glow,var(--c1)),transparent);opacity:0;transition:opacity .3s;z-index:-1;border-radius:inherit;animation:spin 3s linear infinite}
+.card:hover::after{opacity:.6}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.stat{grid-column:span 6}
+@media(min-width:900px){.stat{grid-column:span 3}.wide{grid-column:span 8}.side{grid-column:span 4}.half{grid-column:span 6}}
+.lbl{color:var(--mute);font-size:.85rem;display:flex;justify-content:space-between;align-items:center}
+.icon{font-size:1.6rem;display:inline-block;animation:wob 3s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(-12deg) scale(1)}50%{transform:rotate(12deg) scale(1.25)}}
+.num{font-size:clamp(1.5rem,3.2vw,2.2rem);font-weight:800;margin:10px 0 4px}
+.up{color:var(--c5);font-size:.85rem;font-weight:600}.down{color:var(--c2);font-size:.85rem;font-weight:600}
+h2{font-size:1.05rem;font-weight:600;margin-bottom:14px}
+svg{width:100%;height:auto;display:block;overflow:visible}
+.line{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw 2.5s .9s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.area{opacity:0;animation:fade 1.5s 2s forwards}@keyframes fade{to{opacity:1}}
+.pt{opacity:0;animation:fade .5s forwards;transition:r .2s}.pt:hover{r:9}
+.bars{display:flex;align-items:flex-end;gap:10px;height:170px}
+.bar{flex:1;border-radius:12px 12px 4px 4px;height:0;animation:grow 1.4s cubic-bezier(.2,1.5,.4,1) forwards;animation-delay:calc(var(--k)*.12s + 1s);position:relative;transition:filter .2s}
+.bar:hover{filter:brightness(1.3) saturate(1.3)}
+.bar::before{content:attr(data-v);position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:.75rem;font-weight:600}
+@keyframes grow{to{height:var(--h)}}
+.days{display:flex;gap:10px;margin-top:8px;color:var(--mute);font-size:.78rem}.days span{flex:1;text-align:center}
+.donut{max-width:190px;margin:0 auto;animation:rot 20s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.ring{fill:none;stroke-width:16;stroke-linecap:round;stroke-dasharray:var(--d) 400;stroke-dashoffset:var(--d);animation:ringin 1.8s ease forwards;animation-delay:1s}
+@keyframes ringin{from{stroke-dasharray:0 400}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;margin-top:14px;font-size:.8rem;color:var(--mute)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.feed{list-style:none;padding:0;max-height:260px;overflow:hidden}
+.feed li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);animation:slide .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes slide{from{opacity:0;transform:translateX(-40px) scale(.9)}}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex:none}
+.feed small{display:block;color:var(--mute)}.feed b{margin-left:auto;font-weight:600;white-space:nowrap}
+.goal{height:14px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 16px}
+.goal div{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--c3),var(--c1),var(--c2),var(--c4));background-size:200% 100%;animation:fill 2s 1.2s cubic-bezier(.2,1,.3,1) forwards,shine2 3s linear infinite}
+@keyframes fill{to{width:var(--w)}}@keyframes shine2{to{background-position:200% 0}}
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:rp .6s linear;pointer-events:none}
+@keyframes rp{to{transform:scale(4);opacity:0}}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:9;animation:fall 2.6s linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important}.card,.pt,.area{opacity:1}.bar{height:var(--h)}.line{stroke-dashoffset:0}.goal div{width:var(--w)}}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="wrap">
+<header>
+  <div><h1>Neon Pulse Dashboard</h1><p class="sub">Aaj ka poora business ek nazar mein</p></div>
+  <div class="actions">
+    <div class="live"><span class="dot"></span>Live</div>
+    <button class="ghost" id="theme">Theme</button>
+    <button id="party">Celebrate 🎉</button>
+  </div>
+</header>
+
+<div class="grid">
+  <div class="card stat tilt" style="--i:0;--glow:var(--c1)"><div class="lbl">Revenue <span class="icon">💰</span></div><div class="num" data-to="48250" data-pre="$">0</div><div class="up">▲ 12.4% this week</div></div>
+  <div class="card stat tilt" style="--i:1;--glow:var(--c2)"><div class="lbl">New Users <span class="icon">🚀</span></div><div class="num" data-to="3842">0</div><div class="up">▲ 8.1% this week</div></div>
+  <div class="card stat tilt" style="--i:2;--glow:var(--c3)"><div class="lbl">Orders <span class="icon">🛍️</span></div><div class="num" data-to="1297">0</div><div class="down">▼ 2.3% this week</div></div>
+  <div class="card stat tilt" style="--i:3;--glow:var(--c4)"><div class="lbl">Rating <span class="icon">⭐</span></div><div class="num" data-to="4.9" data-dec="1">0</div><div class="up">▲ 0.2 this week</div></div>
+
+  <div class="card wide tilt" style="--i:4;--glow:var(--c1)">
+    <h2>Growth this year</h2>
+    <svg viewBox="0 0 600 220" role="img" aria-label="Line chart of yearly growth">
+      <defs>
+        <linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ff3d9a"/></linearGradient>
+        <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6" stop-opacity=".5"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient>
+      </defs>
+      <path class="area" d="M20 180 C80 150 110 170 160 120 S250 140 300 90 S400 110 450 60 S540 70 580 30 L580 210 L20 210Z" fill="url(#ag)"/>
+      <path class="line" d="M20 180 C80 150 110 170 160 120 S250 140 300 90 S400 110 450 60 S540 70 580 30" stroke="url(#lg)"/>
+      <g fill="#fff" stroke="#ff3d9a" stroke-width="3">
+        <circle class="pt" style="animation-delay:1.4s" cx="160" cy="120" r="6"/><circle class="pt" style="animation-delay:1.8s" cx="300" cy="90" r="6"/><circle class="pt" style="animation-delay:2.2s" cx="450" cy="60" r="6"/><circle class="pt" style="animation-delay:2.6s" cx="580" cy="30" r="6"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="card side tilt" style="--i:5;--glow:var(--c2)">
+    <h2>Traffic sources</h2>
+    <svg class="donut" viewBox="0 0 120 120" role="img" aria-label="Donut chart of traffic sources">
+      <g transform="rotate(-90 60 60)" fill="none">
+        <circle class="ring" cx="60" cy="60" r="46" stroke="#8b5cf6" style="--d:120"/>
+        <circle class="ring" cx="60" cy="60" r="46" stroke="#ff3d9a" style="--d:80;stroke-dashoffset:-124"/>
+        <circle class="ring" cx="60" cy="60" r="46" stroke="#22d3ee" style="--d:50;stroke-dashoffset:-208"/>
+        <circle class="ring" cx="60" cy="60" r="46" stroke="#ffb020" style="--d:30;stroke-dashoffset:-262"/>
+      </g>
+    </svg>
+    <div class="legend"><span><i style="background:#8b5cf6"></i>Search 42%</span><span><i style="background:#ff3d9a"></i>Social 28%</span><span><i style="background:#22d3ee"></i>Direct 18%</span><span><i style="background:#ffb020"></i>Ads 12%</span></div>
+  </div>
+
+  <div class="card half tilt" style="--i:6;--glow:var(--c3)">
+    <h2>Sales by day</h2>
+    <div class="bars">
+      <div class="bar" style="--k:0;--h:55%;background:linear-gradient(#22d3ee,#8b5cf6)" data-v="55"></div>
+      <div class="bar" style="--k:1;--h:80%;background:linear-gradient(#8b5cf6,#ff3d9a)" data-v="80"></div>
+      <div class="bar" style="--k:2;--h:45%;background:linear-gradient(#ff3d9a,#ffb020)" data-v="45"></div>
+      <div class="bar" style="--k:3;--h:95%;background:linear-gradient(#ffb020,#34e89e)" data-v="95"></div>
+      <div class="bar" style="--k:4;--h:70%;background:linear-gradient(#34e89e,#22d3ee)" data-v="70"></div>
+      <div class="bar" style="--k:5;--h:100%;background:linear-gradient(#22d3ee,#ff3d9a)" data-v="100"></div>
+      <div class="bar" style="--k:6;--h:62%;background:linear-gradient(#8b5cf6,#22d3ee)" data-v="62"></div>
+    </div>
+    <div class="days"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+  </div>
+
+  <div class="card half tilt" style="--i:7;--glow:var(--c4)">
+    <h2>Live activity</h2>
+    <ul class="feed" id="feed"></ul>
+  </div>
+
+  <div class="card wide tilt" style="--i:8;--glow:var(--c5)">
+    <h2>Monthly goals</h2>
+    <div class="lbl"><span>Sales target</span><span>82%</span></div><div class="goal"><div style="--w:82%"></div></div>
+    <div class="lbl"><span>New signups</span><span>67%</span></div><div class="goal"><div style="--w:67%"></div></div>
+    <div class="lbl"><span>Customer happiness</span><span>94%</span></div><div class="goal"><div style="--w:94%"></div></div>
+  </div>
+  <div class="card side tilt" style="--i:9;--glow:var(--c2)">
+    <h2>Server load</h2>
+    <div class="num" id="cpu" style="font-size:2.6rem">42%</div>
+    <div class="goal"><div id="cpubar" style="--w:42%"></div></div>
+    <p class="sub">Har 2 second mein update hota hai</p>
+  </div>
+</div>
+</div>
+
+<script>
+// Count-up numbers
+document.querySelectorAll('.num[data-to]').forEach(function(el){
+  var to=parseFloat(el.dataset.to),dec=+el.dataset.dec||0,pre=el.dataset.pre||'',t0=null;
+  function step(t){if(!t0)t0=t;var p=Math.min((t-t0-900)/2000,1);if(p<0){requestAnimationFrame(step);return}
+    var e=1-Math.pow(1-p,4);el.textContent=pre+(to*e).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+    if(p<1)requestAnimationFrame(step)}
+  requestAnimationFrame(step);
+});
+// 3D tilt on hover
+document.querySelectorAll('.tilt').forEach(function(c){
+  c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    c.style.animation='none';c.style.opacity=1;c.style.transform='perspective(700px) rotateY('+x*12+'deg) rotateX('+-y*12+'deg) scale(1.03)'});
+  c.addEventListener('mouseleave',function(){c.style.transform=''});
+});
+// Live feed
+var names=['Ayesha','Hamza','Sara','Bilal','Zainab','Usman','Hira','Ali'],acts=['bought Pro Plan','left a 5★ review','signed up','upgraded plan','shared a post'],cols=['#8b5cf6','#ff3d9a','#22d3ee','#ffb020','#34e89e'],feed=document.getElementById('feed');
+function addItem(){var n=names[Math.random()*names.length|0],li=document.createElement('li'),c=cols[Math.random()*cols.length|0];
+  li.innerHTML='<div class="av" style="background:'+c+'">'+n[0]+'</div><div>'+n+'<small>'+acts[Math.random()*acts.length|0]+'</small></div><b>$'+(Math.random()*200+10|0)+'</b>';
+  feed.prepend(li);if(feed.children.length>5)feed.lastChild.remove()}
+for(var i=0;i<4;i++)addItem();setInterval(addItem,2500);
+// CPU
+setInterval(function(){var v=20+Math.random()*70|0;document.getElementById('cpu').textContent=v+'%';var b=document.getElementById('cpubar');b.style.animation='none';b.style.width=v+'%';b.style.transition='width 1s'},2000);
+// Theme
+document.getElementById('theme').onclick=function(){var r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':!matchMedia('(prefers-color-scheme:light)').matches;r.dataset.theme=d?'light':'dark'};
+// Confetti + ripple
+document.getElementById('party').addEventListener('click',function(e){
+  var b=e.currentTarget,r=document.createElement('span'),s=b.getBoundingClientRect();r.className='rip';r.style.cssText='width:40px;height:40px;left:'+(e.clientX-s.left-20)+'px;top:'+(e.clientY-s.top-20)+'px';b.appendChild(r);setTimeout(function(){r.remove()},600);
+  for(var i=0;i<80;i++){var d=document.createElement('div');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=cols[i%5];d.style.animationDelay=Math.random()*.8+'s';d.style.borderRadius=i%2?'50%':'2px';document.body.appendChild(d);setTimeout(function(x){x.remove()},3600,d)}
+});
+</script>
+</body>
+</html>
